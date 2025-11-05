@@ -133,7 +133,7 @@ async function prepareRuntime() {
 
     try {
       xrDevice = new XRDevice(metaQuest3);
-      xrDevice.ipd = 0.004;
+      xrDevice.ipd = 0.00015;
       xrDevice.stereoEnabled = true;
       xrDevice.installRuntime();
       xrDevice.enablePortalPoseCamera();

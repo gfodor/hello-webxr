@@ -163,10 +163,10 @@ export function setup(ctx, hall) {
   drawContext.fillRect(0, 0, width, height);
 
   let map = new THREE.CanvasTexture( drawingCanvas );
+  map.colorSpace = THREE.SRGBColorSpace;
 
   material = new THREE.MeshBasicMaterial({
     color: 0xffffff,
-    lightMap: ctx.assets['lightmap_tex'],
     map: map
   });
 

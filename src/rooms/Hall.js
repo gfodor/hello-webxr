@@ -123,7 +123,7 @@ export function setup(ctx) {
 
   // fade camera to black on walls
   fader = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(),
+    new THREE.PlaneGeometry(),
     new THREE.MeshBasicMaterial({color: 0x000000, transparent: true, depthTest: false})
   );
   fader.position.z = -0.1;

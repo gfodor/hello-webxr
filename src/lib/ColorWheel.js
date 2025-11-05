@@ -8,7 +8,7 @@ export default class ColorWheel {
     this.hsv = { h: 0.0, s: 0.0, v: 1.0 };
     this.rgb = {r: 0, g: 0, b: 0};
     this.onColorChanged = onColorChanged;
-    const geometry = new THREE.CircleBufferGeometry(this.radius, 12);
+    const geometry = new THREE.CircleGeometry(this.radius, 12);
     var vertexShader = '\
       varying vec2 vUv;\
       void main() {\
@@ -49,7 +49,7 @@ export default class ColorWheel {
     this.controller = controller;
 
 
-    const geometryLast = new THREE.CircleBufferGeometry(0.025, 12);
+    const geometryLast = new THREE.CircleGeometry(0.025, 12);
     let materialBlack = new THREE.MeshBasicMaterial({color: 0x000000});
     this.blackMesh = new THREE.Mesh(geometryLast, materialBlack);
     this.blackMesh.name = 'black';

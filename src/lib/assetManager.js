@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-import { BasisTextureLoader } from 'three/examples/jsm/loaders/BasisTextureLoader.js';
+import { BasisTextureLoader } from '../vendor/BasisTextureLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
 //const BASIS_LIB_PATH = 'src/vendor/';
 const BASIS_LIB_PATH = 'src/vendor/';
@@ -39,7 +40,7 @@ export function loadAssets(renderer, basePath, assets, onComplete, onProgress, d
 
   var texLoader = new THREE.TextureLoader();
   var objLoader = new OBJLoader();
-  var fontLoader = new THREE.FontLoader();
+  var fontLoader = new FontLoader();
   var audioLoader = new THREE.AudioLoader();
 
 

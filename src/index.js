@@ -133,7 +133,8 @@ async function prepareRuntime() {
 
     try {
       xrDevice = new XRDevice(metaQuest3);
-      xrDevice.ipd = 0;
+      xrDevice.ipd = 0.004;
+      xrDevice.stereoEnabled = true;
       xrDevice.installRuntime();
       xrDevice.enablePortalPoseCamera();
       if (typeof xrDevice.installDevUI === 'function' && DevUI) {
@@ -240,8 +241,7 @@ export function init() {
   ]);
 
   renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: false});
-  renderer.gammaFactor = 2.2;
-  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.xr.enabled = true;
@@ -255,6 +255,9 @@ export function init() {
   ambientMusic = new THREE.Audio(listener);
 
   controls = new PointerLockControls(camera, renderer.domElement);
+  if (typeof controls.getObject !== 'function') {
+    controls.getObject = () => controls.object;
+  }
   if (debug) {
     document.body.addEventListener('click', () => controls.lock());
     document.body.addEventListener('keydown', ev => {

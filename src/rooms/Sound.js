@@ -85,7 +85,7 @@ export function setup(ctx) {
     }
 
     let shadow = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry(3, 3),
+      new THREE.PlaneGeometry(3, 3),
       new THREE.MeshBasicMaterial({
         color: mesh.children[0].material.color,
         map: assets['sound_shadow_tex'],
@@ -122,7 +122,7 @@ export function setup(ctx) {
 
   const floorTexture = assets['grid_tex'];
   const floor = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(20, 20),
+    new THREE.PlaneGeometry(20, 20),
     new THREE.MeshBasicMaterial({map: floorTexture})
   );
   scene.add(floor);

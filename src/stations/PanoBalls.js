@@ -33,7 +33,7 @@ export function setup(ctx, hall) {
         },
         vertexShader: ctx.shaders.panoball_vert,
         fragmentShader: ctx.shaders.panoball_frag,
-        side: THREE.BackSide,
+        side: THREE.FrontSide,
       })
     );
     ball.rotation.set(Math.PI, 0, 0);

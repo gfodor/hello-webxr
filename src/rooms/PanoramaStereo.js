@@ -4,8 +4,15 @@ var panoL, panoR, context;
 export function setup(ctx) {
   const assets = ctx.assets;
   const geometry = new THREE.SphereGeometry(500, 60, 40);
-  const materialL = new THREE.MeshBasicMaterial( { map: assets['stereopanoR'], side: THREE.BackSide } );
-  const materialR = new THREE.MeshBasicMaterial( { map: assets['stereopanoL'], side: THREE.BackSide } );
+  geometry.scale(-1, 1, 1);
+  const materialL = new THREE.MeshBasicMaterial({
+    map: assets['stereopanoR'],
+    side: THREE.FrontSide
+  });
+  const materialR = new THREE.MeshBasicMaterial({
+    map: assets['stereopanoL'],
+    side: THREE.FrontSide
+  });
   panoL = new THREE.Mesh(geometry, materialL);
   panoL.layers.set(1);
   panoR = new THREE.Mesh(geometry, materialR);

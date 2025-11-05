@@ -18,9 +18,13 @@ var panoMaterials = [];
 export function setup(ctx) {
   const assets = ctx.assets;
   const geometry = new THREE.SphereGeometry(500, 60, 40);
+  geometry.scale(-1, 1, 1);
   for (var i = 0; i < NUM_PANOS; i++) {
     const panoName = 'pano'+(i + 2);
-    panoMaterials[i] = new THREE.MeshBasicMaterial( { map: assets[panoName], side: THREE.BackSide });
+    panoMaterials[i] = new THREE.MeshBasicMaterial({
+      map: assets[panoName],
+      side: THREE.FrontSide
+    });
   }
   pano = new THREE.Mesh(geometry, panoMaterials[0]);
 

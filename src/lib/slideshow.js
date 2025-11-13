@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 const PATH_TIME = 3; // 3 secs per path
+const MAIN_ROOM_INDEX = 0; // Hall
 
 var slideshow = {};
 
@@ -116,7 +117,7 @@ slideshow.paths = [
 ];
 
 slideshow.setup = function (context) {
-  this.room = undefined;
+  this.room = MAIN_ROOM_INDEX;
   this.path = undefined;
   this.next(context);
   context.camera.position.set(0, 1.6, 0);
@@ -126,25 +127,10 @@ slideshow.setup = function (context) {
 
 slideshow.next = function (context) {
   this.time = PATH_TIME + Math.random() * PATH_TIME / 2;
-  if (this.room === undefined) {
-    this.room = 0;
+  if (this.path === undefined) {
     this.path = 0;
   } else {
-    this.path ++;
-    if (this.path >= this.paths[this.room].length){
-      // find next room with paths
-      do {
-        this.room ++;
-        if (this.room >= this.paths.length) {
-          this.room = 0;
-          context.cameraRig.position.set(0, 0, 2);
-        }
-      } while (!this.paths[this.room].length);
-      var camera = context.renderer.xr.getCamera(context.camera);
-      camera.position.set(0, 1.6, 0);
-      context.goto = this.room;
-      this.path = 0;
-    }
+    this.path = (this.path + 1) % this.paths[this.room].length;
   }
   this.reset = true;
 };

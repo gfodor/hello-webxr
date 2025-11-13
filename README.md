@@ -12,6 +12,18 @@ This is a WebXR demo made to celebrate the [WebXR spec](https://immersive-web.gi
 2. `npm start`
 3. Open `http://localhost:8080`
 
+### Static bundle for GitHub Pages
+
+To generate a production bundle with all assets collected in a single directory, run the repository-level script:
+
+```bash
+./build-helloxr-static.sh
+```
+
+The script builds the Hello WebXR experience with `NODE_ENV=production` and gathers the necessary static assets into a single folder. The resulting site (HTML, JS, textures, codec bundles, etc.) is written to `dist/helloxr` by default. If you need a different destination (for example to point GitHub Pages at a `docs/` directory), set the `HELLOXR_STATIC_OUT_DIR` environment variable when invoking the script.
+
+After running the script you can deploy the contents of the output directory (including the required `src/vendor` codec files) to any static host, including the GitHub Pages `gh-pages` branch or repository `docs/` folder.
+
 
 ### Shader packing
 

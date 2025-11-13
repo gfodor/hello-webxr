@@ -1,6 +1,3 @@
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-
 module.exports = {
   mode: 'development',
   entry: './src/index.js',
@@ -56,14 +53,7 @@ module.exports = {
     }
   ]
   },
-  plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: path.resolve(__dirname, '../lib/wasm/portal-pose'),
-        to: 'portal-pose',
-      },
-    ]),
-  ],
+  plugins: [],
   watchOptions: {
     ignored: [/node_modules/],
   }

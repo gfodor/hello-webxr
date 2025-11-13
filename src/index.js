@@ -33,8 +33,6 @@ import * as roomSound from './rooms/Sound.js';
 
 import {shaders} from './lib/shaders.js';
 
-import { XRDevice, metaQuest3 } from 'iwer';
-import { DevUI } from '@iwer/devui';
 import WebXRPolyfill from 'webxr-polyfill';
 
 var clock = new THREE.Clock();
@@ -89,10 +87,7 @@ context.room = roomNames.indexOf(roomName) !== -1 ? roomNames.indexOf(roomName) 
 // console.log(`Current room "${roomNames[context.room]}", ${context.room}`);
 const debug = urlObject.searchParams.has('debug');
 const handedness = urlObject.searchParams.has('handedness') ? urlObject.searchParams.get('handedness') : "right";
-const forceIwer = urlObject.searchParams.get('forceIWER') === '1';
-
-let xrDevice = null;
-let usingEmulator = false;
+let usingPolyfill = false;
 
 // Target positions when moving from one room to another
 const targetPositions = {
@@ -112,42 +107,21 @@ const targetPositions = {
   }
 };
 
-async function prepareRuntime() {
-  let nativeSupport = false;
+async function ensureWebXRSupport() {
   if ('xr' in navigator) {
     try {
-      nativeSupport = await navigator.xr.isSessionSupported('immersive-vr');
+      const immersiveSupported = await navigator.xr.isSessionSupported('immersive-vr');
+      if (immersiveSupported) {
+        return;
+      }
     } catch (error) {
       console.warn('[hello-webxr] Failed to query native WebXR support:', error);
     }
   }
 
-  const shouldInstallEmulator = forceIwer || !nativeSupport;
-
-  if (shouldInstallEmulator) {
-    if (forceIwer) {
-      console.log('[hello-webxr] Forcing IWER runtime via ?forceIWER=1');
-    } else {
-      console.log('[hello-webxr] No native WebXR runtime detected, installing IWER emulator.');
-    }
-
-    try {
-      xrDevice = new XRDevice(metaQuest3);
-      xrDevice.stereoEnabled = true;
-      xrDevice.installRuntime();
-      xrDevice.enablePortalPoseCamera();
-      if (typeof xrDevice.installDevUI === 'function' && DevUI) {
-        xrDevice.installDevUI(DevUI);
-      }
-      usingEmulator = true;
-    } catch (error) {
-      console.error('[hello-webxr] Failed to install IWER emulator runtime:', error);
-    }
-  }
-
-  if (!navigator.xr) {
-    new WebXRPolyfill();
-  }
+  console.log('[hello-webxr] Enabling WebXR polyfill');
+  new WebXRPolyfill();
+  usingPolyfill = true;
 }
 
 function gotoRoom(room) {
@@ -190,39 +164,39 @@ function playMusic(room) {
 var ecsyWorld;
 var systemsGroup = {};
 
-function detectWebXR() {
+async function detectWebXR() {
   const banner = document.getElementById('no-webxr');
   if (!banner) {
     return;
   }
 
-  if (usingEmulator) {
+  try {
+    if ('xr' in navigator) {
+      const isSupported = await navigator.xr.isSessionSupported('immersive-vr');
+      if (isSupported) {
+        banner.classList.add('hidden');
+        return;
+      }
+    }
+  } catch (error) {
+    console.warn('[hello-webxr] Unable to detect WebXR support:', error);
+  }
+
+  if (usingPolyfill) {
     banner.classList.add('hidden');
     return;
   }
 
-  if ('xr' in navigator) {
-    navigator.xr.isSessionSupported('immersive-vr')
-      .then((supported) => {
-        if (supported) {
-          banner.classList.add('hidden');
-        } else {
-          banner.classList.remove('hidden');
-        }
-      })
-      .catch(() => {
-        banner.classList.remove('hidden');
-      });
-  } else {
-    banner.classList.remove('hidden');
-  }
+  banner.classList.remove('hidden');
 }
 
 export function init() {
 
   document.getElementById(handedness + 'hand').classList.add('activehand');
 
-  detectWebXR();
+  detectWebXR().catch(error => {
+    console.warn('[hello-webxr] Error while checking WebXR support:', error);
+  });
 
   var w = 100;
   ecsyWorld = new World();
@@ -320,8 +294,7 @@ export function init() {
   context.world = ecsyWorld;
   context.systemsGroup = systemsGroup;
   context.handedness = handedness;
-  context.usingEmulator = usingEmulator;
-  context.xrDevice = xrDevice;
+  context.usingPolyfill = usingPolyfill;
 
   window.context = context;
 
@@ -359,16 +332,6 @@ export function init() {
     });
     document.body.appendChild(vrButton);
 
-    // Auto-enter VR after a brief delay to streamline emulator usage.
-    setTimeout(() => {
-      if (renderer.xr.isPresenting) {
-        return;
-      }
-      if (typeof vrButton.click === 'function') {
-        console.log('[hello-webxr] Auto-clicking Enter VR button');
-        vrButton.click();
-      }
-    }, 2000);
     renderer.setAnimationLoop(animate);
 
     document.getElementById('loading').style.display = 'none';
@@ -483,11 +446,12 @@ function animate() {
 
 async function bootstrap() {
   try {
-    await prepareRuntime();
+    await ensureWebXRSupport();
   } catch (error) {
-    console.error('[hello-webxr] Error preparing XR runtime:', error);
+    console.error('[hello-webxr] Error preparing XR capabilities:', error);
     if (!navigator.xr) {
       new WebXRPolyfill();
+      usingPolyfill = true;
     }
   }
 
